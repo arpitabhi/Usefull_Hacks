@@ -2,36 +2,41 @@ import os
 import re
 import csv
 
-#path = input('Enter the path to folder: ')
-path = '/home/cfg/new'
+#PATH = input('Enter the path to folder: ')
+PATH = '/home/cfg/new/'
+
 try:
-    var1 = os.listdir(path)
+    var1 = os.listdir(PATH)
 except:
     print("Path not found")
 
-global col_name
-col_name=input("Enter the column name: ")
+global COL_NAME
+global INDEX_KEY
+
+COL_NAME = input("Enter the column name: ")
+REGEX_EXP = '^test_.*\.csv$'
+ERROR_DES = "Column not found"
 
 for i in var1:
-    input_file = path+'/'+i
-    output_file = path+'/'+'nu_'+i
-    if re.search('^test_.*\.csv$',i):
-        global k
-        with open(input_file, "r") as source:
-            reader = csv.reader(source)
-            names = next(reader)
-            try:
-                k=names.index(col_name)
-            except:
-                print("Column not found")
-        with open(input_file, "r") as source:
-            reader = csv.reader(source)
-            with open(output_file, "w", newline='') as result:
-                writer = csv.writer(result)
-                for row in reader:
-                    del row[k]
-                    writer.writerow(row)
-        os.rename(output_file,input_file)
+    INPUT_FILE = PATH+i
+    OUTPUT_FILE = PATH+'nu_'+i
+    if re.search(REGEX_EXP,i):
+        try:
+            with open(INPUT_FILE, "r") as source:
+                reader = csv.reader(source)
+                names = next(reader)
+                INDEX_KEY=names.index(COL_NAME)
+                
+            with open(INPUT_FILE, "r") as source:
+                reader = csv.reader(source)
+                with open(OUTPUT_FILE, "w", newline='') as result:
+                    writer = csv.writer(result)
+                    for row in reader:
+                        del row[INDEX_KEY]
+                        writer.writerow(row)
+            os.rename(OUTPUT_FILE,INPUT_FILE)
+        except:
+            print(ERROR_DES)
         
     else:
         pass
